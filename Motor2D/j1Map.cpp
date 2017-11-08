@@ -61,6 +61,38 @@ void j1Map::Path(int x, int y)
 	}
 }
 
+void j1Map::PropagateAStar()
+{
+	iPoint curr;
+	if (frontier.Pop(curr))
+	{
+		iPoint neighbors[4];
+		neighbors[0].create(curr.x + 1, curr.y + 0);
+		neighbors[1].create(curr.x + 0, curr.y + 1);
+		neighbors[2].create(curr.x - 1, curr.y + 0);
+		neighbors[3].create(curr.x + 0, curr.y - 1);
+
+
+		for (uint i = 0; i < 4; ++i)
+		{
+			int new_cost = MovementCost(neighbors[i].x, neighbors[i].y);
+			if (cost_so_far[neighbors[i].x][neighbors[i].y] == NULL || new_cost < cost_so_far[neighbors[i].x][neighbors[i].y])
+			{
+				if (new_cost >= 0)
+				{
+					if (visited.find(neighbors[i]) == -1)
+					{
+						frontier.Push(neighbors[i], new_cost);
+						visited.add(neighbors[i]);
+						breadcrumbs.add(curr);
+						cost_so_far[neighbors[i].x][neighbors[i].y] = new_cost;
+					}
+				}
+			}
+		}
+	}
+}
+
 void j1Map::PropagateDijkstra()
 {
 	// TODO 3: Taking BFS as a reference, implement the Dijkstra algorithm
@@ -89,7 +121,7 @@ void j1Map::PropagateDijkstra()
 						frontier.Push(neighbors[i], new_cost);
 						visited.add(neighbors[i]);
 						breadcrumbs.add(curr);
-						//cost_so_far[neighbors[i].x][neighbors[i].y] = new_cost;
+						cost_so_far[neighbors[i].x][neighbors[i].y] = new_cost;
 					}
 				}
 			}
@@ -118,7 +150,7 @@ int j1Map::MovementCost(int x, int y) const
 void j1Map::PropagateBFS()
 {
 	// TODO 1: Record the direction to the previous node 
-	// with the new list "breadcrumps"
+	// with the new list "breadcrumbs"
 	iPoint curr;
 	if (frontier.Pop(curr))
 	{
