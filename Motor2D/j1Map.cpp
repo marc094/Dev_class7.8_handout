@@ -66,14 +66,13 @@ void j1Map::Path(int x, int y)
 void j1Map::PropagateAStar(iPoint dest)
 {
 	iPoint curr;
-	if (frontier.Pop(curr))
-	{
+	while (frontier.Pop(curr) && curr != dest)
+	{ 
 		iPoint neighbors[4];
 		neighbors[0].create(curr.x + 1, curr.y + 0);
 		neighbors[1].create(curr.x + 0, curr.y + 1);
 		neighbors[2].create(curr.x - 1, curr.y + 0);
 		neighbors[3].create(curr.x + 0, curr.y - 1);
-
 
 		for (uint i = 0; i < 4; ++i)
 		{
@@ -148,7 +147,7 @@ int j1Map::MovementCost(int x, int y) const
 		int id = data.layers.start->next->data->Get(x, y);
 
 		if (id == 0)
-			ret = 3;
+			ret = 0;
 		else
 			ret = 0;
 	}
