@@ -129,6 +129,7 @@ public:
 
 	// Pathfinding
 	int MovementCost(int x, int y) const;
+	void MovementCost_AStar(const iPoint pos, const iPoint origin, const iPoint destination, int& o_cost, int& h_cost) const;
 	void ResetPath();
 	void DrawPath();
 	void Path(int x, int y);
@@ -136,7 +137,7 @@ public:
 	// Propagation style
 	void PropagateBFS();
 	void PropagateDijkstra();
-	void PropagateAStar();
+	void PropagateAStar(iPoint dest);
 
 private:
 
@@ -165,6 +166,10 @@ private:
 	uint				cost_so_far[COST_MAP][COST_MAP];
 	p2DynArray<iPoint>	path;
 	SDL_Texture*		tile_x = nullptr;
+
+	/// A*
+	uint				cost_from_origin[COST_MAP][COST_MAP];
+	uint				cost_to_destination[COST_MAP][COST_MAP];
 };
 
 #endif // __j1MAP_H__

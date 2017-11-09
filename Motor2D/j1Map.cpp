@@ -42,6 +42,8 @@ void j1Map::ResetPath()
 	visited.add(iPoint(19, 4));
 	breadcrumbs.add(iPoint(19, 4));
 	memset(cost_so_far, 0, sizeof(uint) * COST_MAP * COST_MAP);
+	memset(cost_from_origin, 0, sizeof(uint) * COST_MAP * COST_MAP);
+	memset(cost_to_destination, 0, sizeof(uint) * COST_MAP * COST_MAP);
 }
 
 void j1Map::Path(int x, int y)
@@ -61,7 +63,7 @@ void j1Map::Path(int x, int y)
 	}
 }
 
-void j1Map::PropagateAStar()
+void j1Map::PropagateAStar(iPoint dest)
 {
 	iPoint curr;
 	if (frontier.Pop(curr))
@@ -75,10 +77,12 @@ void j1Map::PropagateAStar()
 
 		for (uint i = 0; i < 4; ++i)
 		{
-			int new_cost = MovementCost(neighbors[i].x, neighbors[i].y);
+			int g_cost, h_cost;
+			MovementCost_AStar(neighbors[i], visited[0], dest, g_cost, h_cost);
+			int new_cost = MovementCost(neighbors[i].x, neighbors[i].y) + g_cost + h_cost;
 			if (cost_so_far[neighbors[i].x][neighbors[i].y] == NULL || new_cost < cost_so_far[neighbors[i].x][neighbors[i].y])
 			{
-				if (new_cost >= 0)
+				if (new_cost >= 0 && new_cost)
 				{
 					if (visited.find(neighbors[i]) == -1)
 					{
@@ -91,6 +95,11 @@ void j1Map::PropagateAStar()
 			}
 		}
 	}
+}
+
+void j1Map::MovementCost_AStar(const iPoint pos, const iPoint origin, const iPoint destination, int& g_cost, int& h_cost) const {
+	g_cost = pos.DistanceManhattan(origin) * 10;
+	h_cost = pos.DistanceManhattan(destination) * 10;
 }
 
 void j1Map::PropagateDijkstra()
